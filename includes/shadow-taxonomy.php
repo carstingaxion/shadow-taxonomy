@@ -99,8 +99,8 @@ function create_shadow_taxonomy_term( $post_id, $post, $taxonomy ) {
 		return false;
 	}
 
-	update_term_meta( $new_term['term_id'], 'shadow_post_id', $post_id );
-	update_post_meta( $post_id, 'shadow_term_id', $new_term['term_id'] );
+	update_term_meta( $new_term['term_id'], sanitize_key( 'shadow_' . $taxonomy . '_post_id' ), $post_id );
+	update_post_meta( $post_id, sanitize_key( 'shadow_' . $taxonomy . '_term_id' ), $new_term['term_id'] );
 
 	return $new_term;
 }
@@ -162,7 +162,7 @@ function get_related_post_by_slug( $term, $post_type ) {
  * @return bool | int return the post_id or false if no associated post is found.
  */
 function get_associated_post_id( $term ) {
-	return get_term_meta( $term->term_id, 'shadow_post_id', true );
+	return get_term_meta( $term->term_id, sanitize_key( 'shadow_' . $term->taxonomy .'_post_id' ), true );
 }
 
 /**
@@ -192,11 +192,12 @@ function get_associated_post( $term, $post_type ) {
  * Function gets the associated shadow term of a given post object
  *
  * @param object $post WP Post Object.
+ * @param string $taxonomy Taxonomy Name.
  *
  * @return bool | int returns the term_id or false if no associated term was found.
  */
-function get_associated_term_id( $post ) {
-	return get_post_meta( $post->ID, 'shadow_term_id', true );
+function get_associated_term_id( $post, $taxonomy ) {
+	return get_post_meta( $post->ID, sanitize_key( 'shadow_'. $taxonomy . '_term_id' ), true );
 }
 
 /**
@@ -217,7 +218,7 @@ function get_associated_term( $post, $taxonomy ) {
 		return false;
 	}
 
-	$term_id = get_associated_term_id( $post );
+	$term_id = get_associated_term_id( $post, $taxonomy );
 	return get_term_by( 'id', $term_id, $taxonomy );
 }
 
