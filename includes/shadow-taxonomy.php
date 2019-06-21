@@ -210,7 +210,7 @@ function get_associated_term_id( $post, $taxonomy ) {
  */
 function get_associated_term( $post, $taxonomy ) {
 
-	if ( is_int( $post ) ) {
+	if ( is_numeric( $post ) ) {
 		$post = get_post( $post );
 	}
 
