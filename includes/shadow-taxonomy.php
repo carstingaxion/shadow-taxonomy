@@ -1,4 +1,8 @@
 <?php
+/**
+ * Shadow taxonomy dropin.
+ */
+
 namespace Shadow_Taxonomy\Core;
 
 /**
@@ -17,13 +21,15 @@ function create_relationship( $post_type, $taxonomy ) {
 /**
  * Function creates a closure for the wp_insert_post hook, which handles creating an
  * associated taxonomy term.
- * @param string $post_type Post Type Slug
- * @param string $taxonomy Taxonomy Slug
+ *
+ * @param string $post_type Post Type Slug.
+ * @param string $taxonomy Taxonomy Slug.
  *
  * @return Closure
  */
 function create_shadow_term( $post_type, $taxonomy ) {
 	return function( $post_id ) use ( $post_type, $taxonomy ) {
+
 		$term = get_associated_term( $post_id, $taxonomy );
 
 		$post = get_post( $post_id );
@@ -36,9 +42,13 @@ function create_shadow_term( $post_type, $taxonomy ) {
 			return false;
 		}
 
+		// This enables us to stop the creation of the shadow tax term if needed.
+		\do_action( 'shadow_tax_before_create', $post );
+
 		if ( ! $term ) {
 			create_shadow_taxonomy_term( $post_id, $post, $taxonomy );
-		} else {
+		}
+		else {
 			$post = get_associated_post( $term, $post_type );
 
 			if ( empty( $post ) ) {
@@ -120,7 +130,8 @@ function post_type_already_in_sync( $term, $post ) {
 		if ( $term->name === $post->post_title && $term->slug === $post->post_name ) {
 			return true;
 		}
-	} else {
+	}
+	else {
 		if ( $term->name === $post->post_title ) {
 			return true;
 		}
@@ -219,29 +230,4 @@ function get_associated_term( $post, $taxonomy ) {
 
 	$term_id = get_associated_term_id( $post );
 	return get_term_by( 'id', $term_id, $taxonomy );
-}
-
-/**
- * Function will get all related posts for a given post ID. The function
- * essentially converts all the attached shadow term relations into the actual associated
- * posts.
- *
- * @param int    $post_id The ID of the post.
- * @param string $taxonomy The name of the shadow taxonomy.
- * @param string $cpt The name of the associated post type.
- *
- * @return array|bool Returns false or an are of post Objects if any are found.
- */
-function get_the_posts( $post_id, $taxonomy, $cpt ) {
-	$terms = get_the_terms( $post_id, $taxonomy );
-
-	if ( ! empty( $terms ) ) {
-		return array_map( function( $term ) use ( $cpt ) {
-			$post = get_associated_post( $term, $cpt );
-			if ( ! empty( $post ) ) {
-				return $post;
-			}
-		}, $terms );
-	}
-	return false;
 }

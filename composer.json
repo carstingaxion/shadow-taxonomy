@@ -1,17 +1,25 @@
 {
-	"name": "developwithwp/shadow-taxonomies",
+	"name": "devgeniem/shadow-taxonomy",
 	"description": "A library used for create relationships between CPT's",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"type": "package",
 	"keywords": [],
-	"homepage": "https://github.com/mrbobbybryant/shadow-taxonomy",
+	"homepage": "https://github.com/devgeniem/shadow-taxonomy",
 	"license": "GPL-2.0+",
-	"author": {
-		"name": "Bobby Bryant",
-		"email": "bobby@developwithwp.com",
-		"homepage": "Bobby Bryant",
-		"role": "Developer"
-	},
+	"authors": [
+		{
+			"name": "Bobby Bryant",
+			"email": "bobby@developwithwp.com",
+			"homepage": "Bobby Bryant",
+			"role": "Developer"
+		},
+		{
+			"name": "Otto Rautamaa",
+			"email": "otto.rautamaa@geniem.com",
+			"homepage": "https://github.com/ironland",
+			"role": "Developer"
+		}
+	],
   "minimum-stability": "dev",
 	"repositories" : [
 		{
@@ -23,6 +31,6 @@
     "require-dev": {
 	},
   "autoload": {
-      "files": [ "index.php" ]
+      "files": [ "shadowtax.php" ]
   }
 }
