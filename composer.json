@@ -1,7 +1,6 @@
 {
 	"name": "devgeniem/shadow-taxonomy",
 	"description": "A library used for create relationships between CPT's",
-	"version": "1.1.1",
 	"type": "package",
 	"keywords": [],
 	"homepage": "https://github.com/devgeniem/shadow-taxonomy",
@@ -18,13 +17,6 @@
 			"email": "otto.rautamaa@geniem.com",
 			"homepage": "https://github.com/ironland",
 			"role": "Developer"
-		}
-	],
-  "minimum-stability": "dev",
-	"repositories" : [
-		{
-			"type" : "composer",
-			"url"  : "https://wpackagist.org"
 		}
 	],
 	"require": {},
