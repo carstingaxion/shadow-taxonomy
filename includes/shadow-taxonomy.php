@@ -43,7 +43,12 @@ function create_shadow_term( $post_type, $taxonomy ) {
 		}
 
 		// This enables us to stop the creation of the shadow tax term if needed.
-		\do_action( 'shadow_tax_before_create', $post );
+		$continue = true;
+		$continue = \apply_filters( 'shadow_tax_before_create', $post );
+
+		if ( ! $continue ) {
+			return false;
+		}
 
 		if ( ! $term ) {
 			create_shadow_taxonomy_term( $post_id, $post, $taxonomy );
@@ -141,31 +146,6 @@ function post_type_already_in_sync( $term, $post ) {
 }
 
 /**
- * Function finds the associated shadow post for a given term slug. This function is required due
- * to some possible recursion issues if we only check for posts by ID.
- *
- * @param object $term The Term Object.
- * @param string $post_type The Post Type Slug.
- *
- * @return bool|object Returns false if no post is found, or the Post Object if one is found.
- */
-function get_related_post_by_slug( $term, $post_type ) {
-	$post = new \WP_Query([
-		'post_type'      => $post_type,
-		'posts_per_page' => 1,
-		'post_status'    => 'publish',
-		'name'           => $term->slug,
-		'no_found_rows'  => true,
-	]);
-
-	if ( empty( $post->posts ) || is_wp_error( $post ) ) {
-		return false;
-	}
-
-	return $post->posts[0];
-}
-
-/**
  * Function gets the associated shadow post of a given term object.
  *
  * @param object $term WP Term Object.
@@ -220,7 +200,7 @@ function get_associated_term_id( $post ) {
  */
 function get_associated_term( $post, $taxonomy ) {
 
-	if ( is_int( $post ) ) {
+	if ( \is_numeric( $post ) ) {
 		$post = get_post( $post );
 	}
 
@@ -230,4 +210,29 @@ function get_associated_term( $post, $taxonomy ) {
 
 	$term_id = get_associated_term_id( $post );
 	return get_term_by( 'id', $term_id, $taxonomy );
+}
+
+/**
+ * Function finds the associated shadow post for a given term slug. This function is required due
+ * to some possible recursion issues if we only check for posts by ID.
+ *
+ * @param object $term The Term Object.
+ * @param string $post_type The Post Type Slug.
+ *
+ * @return bool|object Returns false if no post is found, or the Post Object if one is found.
+ */
+function get_related_post_by_slug( $term, $post_type ) {
+	$post = new \WP_Query([
+		'post_type'      => $post_type,
+		'posts_per_page' => 1,
+		'post_status'    => 'publish',
+		'name'           => $term->slug,
+		'no_found_rows'  => true,
+	]);
+
+	if ( empty( $post->posts ) || is_wp_error( $post ) ) {
+		return false;
+	}
+
+	return $post->posts[0];
 }
