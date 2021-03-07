@@ -57,8 +57,8 @@ class Shadow_Terms extends \WP_CLI_Command {
 			'posts_per_page'    =>  500,
 			'meta_query'        => [
 				[
-					'key'     => 'shadow_term_id',
-					'compare' => 'NOT EXISTS'
+					'key'     => sanitize_key( 'shadow_' . $tax . '_term_id' ),
+					'compare' => 'NOT EXISTS',
 				],
 			],
 		];
@@ -139,8 +139,8 @@ class Shadow_Terms extends \WP_CLI_Command {
 						\WP_CLI::log( sprintf( 'Created Term: %s', esc_html( $post->post_title ) ) );
 					}
 
-					update_term_meta( $new_term[ 'term_id' ], 'shadow_post_id', $post->ID );
-					update_post_meta( $post->ID, 'shadow_term_id', $new_term[ 'term_id' ] );
+					update_term_meta( $new_term[ 'term_id' ], sanitize_key( 'shadow_' . $assoc_args['tax'] .'_post_id' ), $post->ID );
+					update_post_meta( $post->ID, sanitize_key( 'shadow_' . $assoc_args['tax'] . '_term_id' ), $new_term[ 'term_id' ] );
 				}
 			}
 
@@ -236,15 +236,15 @@ class Shadow_Terms extends \WP_CLI_Command {
 		 * Check for missing Shadow Taxonomy Terms.
 		 */
 		$args = [
-			'post_type'         =>  $cpt,
-			'post_status'       =>  'publish',
-			'posts_per_page'    =>  500,
-			'meta_query'        => [
-				[
-					'key' => 'shadow_term_id',
-					'compare' => 'NOT EXISTS'
+				'post_type'         =>  $cpt,
+				'post_status'       =>  'publish',
+				'posts_per_page'    =>  500,
+				'meta_query'        => [
+					[
+						'key'     => sanitize_key( 'shadow_' . $tax . '_term_id' ),
+						'compare' => 'NOT EXISTS',
+					],
 				],
-			],
 		];
 
 		$posts = new \WP_Query( $args );
@@ -262,7 +262,7 @@ class Shadow_Terms extends \WP_CLI_Command {
 				if ( empty( $terms ) ) {
 					array_push( $term_to_create, $post );
 				} else {
-					$post_meta = get_post_meta( $post->ID, 'shadow_term_id', true );
+					$post_meta = get_post_meta( $post->ID, sanitize_key( 'shadow_' . $tax . '_term_id' ), true );
 
 					if ( empty( $post_meta ) ) {
 						array_push(
@@ -305,7 +305,7 @@ class Shadow_Terms extends \WP_CLI_Command {
 				if ( empty( $post->posts ) || is_wp_error( $post ) ) {
 					array_push( $terms_to_delete, $term );
 				} else {
-					$term_meta = get_term_meta( $term->term_id, 'shadow_post_id', true );
+					$term_meta = get_term_meta( $term->term_id, sanitize_key( 'shadow_' . $tax . '_post_id' ), true );
 
 					if ( empty( $term_meta ) ) {
 						array_push(
@@ -376,8 +376,8 @@ class Shadow_Terms extends \WP_CLI_Command {
 						\WP_CLI::log( sprintf( 'Created Term: %s', esc_html( $post->post_title ) ) );
 					}
 
-					update_term_meta( $new_term[ 'term_id' ], 'shadow_post_id', $post->ID );
-					update_post_meta( $post->ID, 'shadow_term_id', $new_term[ 'term_id' ] );
+					update_term_meta( $new_term[ 'term_id' ], sanitize_key( 'shadow_' . $tax .'_post_id' ), $post->ID );
+					update_post_meta( $post->ID, sanitize_key( 'shadow_' . $tax . '_term_id' ), $new_term[ 'term_id' ] );
 				}
 			}
 
@@ -396,13 +396,13 @@ class Shadow_Terms extends \WP_CLI_Command {
 
 			if ( ! empty( $terms_missing_metadata ) ) {
 				foreach ( $terms_missing_metadata as $meta ) {
-					update_term_meta( $meta[ 'term_id' ], 'shadow_post_id', $meta[ 'post_id' ] );
+					update_term_meta( $meta[ 'term_id' ], sanitize_key( 'shadow_' . $tax .'_post_id' ) , $meta[ 'post_id' ] );
 				}
 			}
 
 			if ( ! empty( $posts_missing_metadata ) ) {
 				foreach ( $posts_missing_metadata as $meta ) {
-					update_post_meta( $meta[ 'post_id' ], 'shadow_term_id', $meta[ 'term_id' ] );
+					update_post_meta( $meta[ 'post_id' ], sanitize_key( 'shadow_' . $tax .'_term_id' ), $meta[ 'term_id' ] );
 				}
 			}
 		}
@@ -434,7 +434,7 @@ class Shadow_Terms extends \WP_CLI_Command {
 			'posts_per_page'    =>  500,
 			'meta_query'        => [
 				[
-					'key'     => 'shadow_term_id',
+					'key'     => sanitize_key( 'shadow_' . $tax . '_term_id' ),
 					'compare' => 'NOT EXISTS'
 				],
 			],
@@ -448,7 +448,7 @@ class Shadow_Terms extends \WP_CLI_Command {
 
 		if ( $posts->have_posts() ) {
 			$term_to_create = array_filter( $posts->posts, function( $post ) use ( $tax ) {
-				$shadow_term = get_post_meta( $post->ID, 'shadow_term_id', true );
+				$shadow_term = get_post_meta( $post->ID, sanitize_key( 'shadow_' . $tax . '_term_id' ), true );
 
 				if ( empty( $shadow_term ) ) {
 					return $post;
@@ -504,8 +504,8 @@ class Shadow_Terms extends \WP_CLI_Command {
 						\WP_CLI::log( sprintf( 'Created Term: %s', esc_html( $post->post_title ) ) );
 					}
 
-					update_term_meta( $new_term[ 'term_id' ], 'shadow_post_id', $post->ID );
-					update_post_meta( $post->ID, 'shadow_term_id', $new_term[ 'term_id' ] );
+					update_term_meta( $new_term[ 'term_id' ], sanitize_key( 'shadow_' . $assoc_args['tax'] .'_post_id' ), $post->ID );
+					update_post_meta( $post->ID, sanitize_key( 'shadow_' . $assoc_args['tax'] . '_term_id' ), $new_term[ 'term_id' ] );
 				}
 			}
 		}
